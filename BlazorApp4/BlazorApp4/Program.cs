@@ -19,7 +19,8 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 {
     options.Domain = builder.Configuration["Auth0:Domain"]!;
     options.ClientId = builder.Configuration["Auth0:ClientId"]!;
-});
+})
+.WithAccessToken(c => c.Audience = builder.Configuration["Auth0:Audience"]!);
 
 builder.Services.AddHttpContextAccessor();
 
