@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BlazorApp4.Identity
 {
@@ -36,10 +37,22 @@ namespace BlazorApp4.Identity
 
         protected override TimeSpan RevalidationInterval => TimeSpan.FromMinutes(30);
 
-        protected override Task<bool> ValidateAuthenticationStateAsync(
+        protected override async Task<bool> ValidateAuthenticationStateAsync(
             AuthenticationState authenticationState, CancellationToken cancellationToken)
         {
-            return Task.FromResult(true);
+            // Get the user manager from a new scope to ensure it fetches fresh data
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            return ValidateSecurityStampAsync(authenticationState.User);
+        }
+
+        private bool ValidateSecurityStampAsync(ClaimsPrincipal principal)
+        {
+            if (principal.Identity?.IsAuthenticated is false)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void OnAuthenticationStateChanged(Task<AuthenticationState> authenticationStateTask)
