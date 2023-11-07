@@ -8,4 +8,11 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
 
+builder.Services
+    .AddTransient<CookieHandler>()
+    .AddScoped(sp => sp
+        .GetRequiredService<IHttpClientFactory>()
+        .CreateClient("API"))
+    .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7078/")).AddHttpMessageHandler<CookieHandler>();
+
 await builder.Build().RunAsync();

@@ -1,4 +1,5 @@
 using Auth0.AspNetCore.Authentication;
+using BlazorApp4.Client;
 using BlazorApp4.Client.Pages;
 using BlazorApp4.Components;
 using BlazorApp4.Identity;
@@ -22,6 +23,13 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services
+    .AddTransient<CookieHandler>()
+    .AddScoped(sp => sp
+        .GetRequiredService<IHttpClientFactory>()
+        .CreateClient("API"))
+    .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7078/")).AddHttpMessageHandler<CookieHandler>();
 
 var app = builder.Build();
 
@@ -53,6 +61,9 @@ app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = 
 
     await httpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
 });
+
+app.MapGet("/Hello", (HttpContext httpContext) => Results.Ok("Hi!"))
+   .RequireAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
