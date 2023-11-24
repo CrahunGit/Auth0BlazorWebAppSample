@@ -59,7 +59,8 @@ else
     }
 
     private async void HandleSubmit()
-    {
+    {
+
         isSaving = true;
         await Task.Delay(2000);
 
@@ -72,6 +73,7 @@ else
         if (authenticationState is not null)
         {
             var authState = await authenticationState;
+            await SayHello();
         }
     }
 }
