@@ -1,4 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using System.Security.Claims
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+@inject PersistentComponentState Persist
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">BlazorApp4</a>
     </div>
@@ -40,10 +46,9 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <LogoutForm id="logout-form" />
-                    <NavLink class="nav-link" href="#" onclick="document.getElementById('logout-form').submit(); return false;">
-                        <span class="bi bi-arrow-bar-left" aria-hidden="true"></span> Logout
-                    </NavLink>
+                    <a href="https://@Configuration["Auth0:Domain"]/oidc/logout?clientId=@Configuration["Auth0:ClientId"]&logout_hint=@sid" data-enhance-nav="false">
+                         Logout
+                    </a>
                 </div>
             </Authorized>
             <NotAuthorized>
@@ -53,7 +58,7 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Account/Login">
+                    <NavLink class="nav-link" href="/Account/Login" data-enhance-nav="false">
                         <span class="bi bi-person-badge" aria-hidden="true"></span> Login
                     </NavLink>
                 </div>
@@ -61,3 +66,51 @@
         </AuthorizeView>
     </nav>
 </div>
+
+@code {
+    private string? currentUrl;
+    private string? sid;
+    private PersistingComponentStateSubscription _subscription;
+
+    [CascadingParameter]
+    public required HttpContext httpContext { get; set; } 
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.Uri;
+        NavigationManager.LocationChanged += OnLocationChanged;
+
+        _subscription = Persist.RegisterOnPersisting(PersistUser);
+
+        if (Persist.TryTakeFromJson<string>("userSid", out var storedUserSid))
+        {
+            sid = storedUserSid;
+        }
+        else
+        {
+            var sidClaim = httpContext?.User?.FindFirstValue("sid");
+
+            if (sidClaim is not null)
+            {
+                sid = httpContext?.User?.FindFirstValue("sid");
+            }
+        }
+    }
+
+    private Task PersistUser()
+    {
+        Persist.PersistAsJson("userSid", sid);
+        return Task.CompletedTask;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = e.Location;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
