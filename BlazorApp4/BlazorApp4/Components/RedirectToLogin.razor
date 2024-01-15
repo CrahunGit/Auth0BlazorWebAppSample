@@ -1,9 +1,12 @@
+@using System.Web
+@attribute [Microsoft.AspNetCore.Authorization.AllowAnonymous]
 @inject NavigationManager NavigationManager
 
 @code {
 
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/Account/Login", true);        
+        base.OnInitialized();
+        NavigationManager.NavigateTo("/account/login?returnUrl=" + HttpUtility.UrlEncode(NavigationManager.ToBaseRelativePath(NavigationManager.Uri)), forceLoad: true);
     }
 }
