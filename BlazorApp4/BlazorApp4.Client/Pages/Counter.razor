@@ -1,10 +1,11 @@
 ﻿@page "/counter"
+@using BlazorApp4.Client.Handlers
+@using MediatR
 @using Microsoft.AspNetCore.Authorization
 
 @rendermode InteractiveAuto
-@inject IHttpClientFactory Factory
+@inject IMediator Mediator
 @attribute [Authorize]
-@attribute [StreamRendering]
 
 <PageTitle>Counter</PageTitle>
 
@@ -16,24 +17,6 @@
 <button class="btn btn-primary" @onclick="SayHello">SayHello</button>
 <p role="status">Say: @say</p>
 
-<form @onsubmit="HandleSubmit" style="margin-top: 500px" data-enhance>
-    <input type="text" class="form-control" @bind="text">
-
-    <div class="col-xs-12">
-        <div class="center-block">
-            <button type="submit" class="btn btn-default">Enviar</button>
-        </div>
-    </div>
-</form>
-
-@if (isSaving)
-{
-    <span>Saving...</span>
-}
-else
-{
-    <span>@text</span>
-}
 
 @code {
     private int currentCount = 0;
@@ -48,9 +31,8 @@ else
     private Task<AuthenticationState>? authenticationState { get; set; }
 
     private async Task SayHello()
-    {
-        var client = Factory.CreateClient("API");
-        say = await client.GetStringAsync("/Hello");
+    {        
+        say = (await Mediator.Send(new SayHelloRequest())).response;
     }
 
     private void IncrementCount()

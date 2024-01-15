@@ -13,6 +13,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<Program>());
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
@@ -23,14 +24,6 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-
-builder.Services
-    .AddTransient<CookieHandler>()
-    .AddScoped(sp => sp
-        .GetRequiredService<IHttpClientFactory>()
-        .CreateClient("API"))
-    .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7078/")).AddHttpMessageHandler<CookieHandler>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
