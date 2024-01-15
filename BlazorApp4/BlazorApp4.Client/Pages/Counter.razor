@@ -32,7 +32,7 @@
 
     private async Task SayHello()
     {        
-        say = (await Mediator.Send(new SayHelloRequest())).response;
+        say = (await Mediator.Send(new SayHelloRequest())).Response;
     }
 
     private void IncrementCount()
