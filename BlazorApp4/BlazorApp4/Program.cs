@@ -6,6 +6,8 @@ using BlazorApp4.Components;
 using BlazorApp4.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization.Policy;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +27,17 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.ClientId = builder.Configuration["Auth0:ClientId"]!;
 });
 
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, BlazorAuthorizationMiddlewareResultHandler>();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services
+    .AddTransient<CookieHandler>()
+    .AddScoped(sp => sp
+        .GetRequiredService<IHttpClientFactory>()
+        .CreateClient("API"))
+    .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7078/")).AddHttpMessageHandler<CookieHandler>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,10 +54,13 @@ else
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
+app.MapGet("/test/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
     var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
             // Indicate here where Auth0 should redirect the user after a login.
@@ -59,10 +74,7 @@ app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = 
 
 app.MapGet("/Account/Logout", async (HttpContext httpContext, string returnUrl = "/") =>
 {
-    var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
-            // Indicate here where Auth0 should redirect the user after a login.
-            // Note that the resulting absolute Uri must be added to the
-            // **Allowed Callback URLs** settings for the app.
+    var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
             .WithRedirectUri(returnUrl)
             .Build();
 
@@ -77,7 +89,8 @@ app.MapGet("/Account/Logout", async (HttpContext httpContext, string returnUrl =
 
     await httpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
     await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-});
+})
+    .RequireAuthorization();
 
 app.MapGet("/Hello", (HttpContext httpContext) => Results.Ok("Hi!"))
    .RequireAuthorization();
@@ -88,3 +101,11 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(Counter).Assembly);
 
 app.Run();
+
+public class BlazorAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
+{
+    public Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy, PolicyAuthorizationResult authorizeResult)
+    {
+        return next(context);
+    }
+}

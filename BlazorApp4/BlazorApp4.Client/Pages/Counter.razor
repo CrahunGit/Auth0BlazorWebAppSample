@@ -1,10 +1,10 @@
-﻿@page "/counter"
+@page "/counter"
 @using BlazorApp4.Client.Handlers
 @using MediatR
 @using Microsoft.AspNetCore.Authorization
 
 @rendermode InteractiveAuto
-@inject IMediator Mediator
+@inject IHttpClientFactory HttpClientFactory
 @attribute [Authorize]
 
 <PageTitle>Counter</PageTitle>
@@ -32,7 +32,8 @@
 
     private async Task SayHello()
     {        
-        say = (await Mediator.Send(new SayHelloRequest())).Response;
+        var client = HttpClientFactory.CreateClient("API");
+        say = await client.GetStringAsync("/hello");
     }
 
     private void IncrementCount()
