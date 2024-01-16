@@ -1,13 +1,12 @@
 using Auth0.AspNetCore.Authentication;
-using Azure;
 using BlazorApp4.Client;
 using BlazorApp4.Client.Pages;
 using BlazorApp4.Client.Services;
 using BlazorApp4.Components;
 using BlazorApp4.Identity;
+using BlazorApp4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -29,6 +28,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, BlazorAuthorizationMiddlewareResultHandler>();
 builder.Services.AddScoped<HostingEnvironmentService>();
+builder.Services.AddSingleton<BaseUrlProvider>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services
@@ -36,7 +36,12 @@ builder.Services
     .AddScoped(sp => sp
         .GetRequiredService<IHttpClientFactory>()
         .CreateClient("API"))
-    .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7078/")).AddHttpMessageHandler<CookieHandler>();
+    .AddHttpClient("API", (provider, client) =>
+    {
+        // Get base address
+        var uri = provider.GetRequiredService<BaseUrlProvider>().BaseUrl;
+        client.BaseAddress = new Uri(uri);
+    }).AddHttpMessageHandler<CookieHandler>();
 
 
 var app = builder.Build();
@@ -61,7 +66,7 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapGet("/test/Login", async (HttpContext httpContext, string returnUrl = "/") =>
+app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
     var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
             // Indicate here where Auth0 should redirect the user after a login.
@@ -102,11 +107,3 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(Counter).Assembly);
 
 app.Run();
-
-public class BlazorAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
-{
-    public Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy, PolicyAuthorizationResult authorizeResult)
-    {
-        return next(context);
-    }
-}
