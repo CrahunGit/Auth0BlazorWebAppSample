@@ -1,4 +1,4 @@
-﻿using BlazorApp4.Client.Handlers;
+using BlazorApp4.Client.Handlers;
 using MediatR;
 using static BlazorApp4.Client.Handlers.SayHelloRequest;
 
@@ -17,6 +17,6 @@ public class HelloHandler : IRequestHandler<SayHelloRequest, SayHelloResponse>
     {
         var client = Factory.CreateClient("API");
         var result = await client.GetStringAsync("/Hello");
-        return new SayHelloResponse(result);
+        return new SayHelloResponse($"Client: {result}");
     }
 }
