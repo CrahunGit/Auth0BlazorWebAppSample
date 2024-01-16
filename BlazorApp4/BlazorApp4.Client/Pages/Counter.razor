@@ -1,10 +1,10 @@
-@page "/counter"
-@using BlazorApp4.Client.Handlers
-@using MediatR
+﻿@page "/counter"
 @using Microsoft.AspNetCore.Authorization
+@using BlazorApp4.Client.Services
 
 @rendermode InteractiveAuto
 @inject IHttpClientFactory HttpClientFactory
+@inject HostingEnvironmentService HostingEnvironmentService
 @attribute [Authorize]
 
 <PageTitle>Counter</PageTitle>
@@ -34,6 +34,7 @@
     {        
         var client = HttpClientFactory.CreateClient("API");
         say = await client.GetStringAsync("/hello");
+		say = say + " called from " + HostingEnvironmentService.EnvironmentName;
     }
 
     private void IncrementCount()

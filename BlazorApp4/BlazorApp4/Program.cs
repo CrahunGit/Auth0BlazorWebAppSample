@@ -2,6 +2,7 @@ using Auth0.AspNetCore.Authentication;
 using Azure;
 using BlazorApp4.Client;
 using BlazorApp4.Client.Pages;
+using BlazorApp4.Client.Services;
 using BlazorApp4.Components;
 using BlazorApp4.Identity;
 using Microsoft.AspNetCore.Authentication;
@@ -17,7 +18,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<Program>());
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
@@ -28,6 +28,7 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 });
 
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, BlazorAuthorizationMiddlewareResultHandler>();
+builder.Services.AddScoped<HostingEnvironmentService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services
