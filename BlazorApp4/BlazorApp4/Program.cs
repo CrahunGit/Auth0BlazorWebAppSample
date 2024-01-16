@@ -1,5 +1,4 @@
 using Auth0.AspNetCore.Authentication;
-using Azure;
 using BlazorApp4.Client;
 using BlazorApp4.Client.Pages;
 using BlazorApp4.Client.Services;
@@ -8,9 +7,7 @@ using BlazorApp4.Identity;
 using BlazorApp4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,7 +66,7 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapGet("/test/Login", async (HttpContext httpContext, string returnUrl = "/") =>
+app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
     var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
             // Indicate here where Auth0 should redirect the user after a login.
@@ -110,11 +107,3 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(Counter).Assembly);
 
 app.Run();
-
-public class BlazorAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
-{
-    public Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy, PolicyAuthorizationResult authorizeResult)
-    {
-        return next(context);
-    }
-}
