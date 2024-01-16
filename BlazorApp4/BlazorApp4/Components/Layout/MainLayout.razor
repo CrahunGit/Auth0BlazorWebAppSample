@@ -1,4 +1,8 @@
+@using BlazorApp4.Services
 @inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject BaseUrlProvider BaseUrlProvider
+
 
 <div class="page">
     <div class="sidebar">
@@ -21,3 +25,11 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        BaseUrlProvider.SetBaseUrl(NavigationManager.BaseUri);
+        return base.OnInitializedAsync();
+    }
+}

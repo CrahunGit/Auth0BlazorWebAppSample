@@ -42,7 +42,7 @@ builder.Services
     .AddHttpClient("API", (provider, client) =>
     {
         // Get base address
-        var uri = provider.GetRequiredService<NavigationManager>().BaseUri;
+        var uri = provider.GetRequiredService<BaseUrlProvider>().BaseUrl;
         client.BaseAddress = new Uri(uri);
     }).AddHttpMessageHandler<CookieHandler>();
 

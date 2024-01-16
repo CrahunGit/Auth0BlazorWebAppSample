@@ -15,6 +15,6 @@ builder.Services
     .AddScoped(sp => sp
         .GetRequiredService<IHttpClientFactory>()
         .CreateClient("API"))
-    .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7078/")).AddHttpMessageHandler<CookieHandler>();
+    .AddHttpClient("API", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)).AddHttpMessageHandler<CookieHandler>();
 
 await builder.Build().RunAsync();
