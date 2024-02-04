@@ -35,22 +35,21 @@
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Account/Manage">
-                        <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name
+                    <NavLink class="nav-link" href="home">
+                        <span class="bi bi-lock" aria-hidden="true"></span> @context.User.Identity?.Name
                     </NavLink>
+                   
                 </div>
                 <div class="nav-item px-3">
-                    <a href="/Account/Logout" data-enhance-nav="false">
-                         Logout
-                    </a>
+                    <form action="/Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <button type="submit" class="btn btn-link">
+                            Logout
+                        </button>
+                    </form>
                 </div>
             </Authorized>
             <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Account/Register">
-                        <span class="bi bi-person" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/Account/Login" data-enhance-nav="false">
                         <span class="bi bi-person-badge" aria-hidden="true"></span> Login
