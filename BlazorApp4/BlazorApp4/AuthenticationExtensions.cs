@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 namespace BlazorApp4;
 
 public static class AuthenticationExtensions
@@ -9,7 +9,7 @@ public static class AuthenticationExtensions
     {
         app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
         {
-            await httpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme,
+            await httpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme,
                 new AuthenticationProperties
                 {
                     RedirectUri = !string.IsNullOrEmpty(returnUrl) ? returnUrl : "/"
@@ -36,7 +36,7 @@ public static class AuthenticationExtensions
                 }
             }
 
-            await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme,
+            await httpContext.SignOutAsync(Auth0Constants.AuthenticationScheme,
                 authenticationProperties);
 
             await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

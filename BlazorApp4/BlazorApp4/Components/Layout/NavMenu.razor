@@ -35,7 +35,10 @@
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    @context.User.Identity?.Name
+                    <NavLink class="nav-link" href="home">
+                        <span class="bi bi-lock" aria-hidden="true"></span> @context.User.Identity?.Name
+                    </NavLink>
+                   
                 </div>
                 <div class="nav-item px-3">
                     <form action="/Account/Logout" method="post">
