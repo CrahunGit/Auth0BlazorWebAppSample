@@ -33,7 +33,7 @@
     private async Task SayHello()
     {        
         var client = HttpClientFactory.CreateClient("API");
-        say = await client.GetStringAsync("/hello");
+        say = await client.GetStringAsync("api/Counter");
 		say = say + " called from " + HostingEnvironmentService.EnvironmentName;
     }
 

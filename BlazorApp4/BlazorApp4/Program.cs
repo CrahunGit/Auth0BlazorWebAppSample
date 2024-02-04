@@ -1,4 +1,5 @@
 using Auth0.AspNetCore.Authentication;
+using BlazorApp4;
 using BlazorApp4.Client;
 using BlazorApp4.Client.Pages;
 using BlazorApp4.Client.Services;
@@ -66,39 +67,9 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
-{
-    var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
-            // Indicate here where Auth0 should redirect the user after a login.
-            // Note that the resulting absolute Uri must be added to the
-            // **Allowed Callback URLs** settings for the app.
-            .WithRedirectUri(returnUrl)
-            .Build();
+AuthenticationExtensions.SetupEndpoints(app);
 
-    await httpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
-});
-
-app.MapGet("/Account/Logout", async (HttpContext httpContext, string returnUrl = "/") =>
-{
-    var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
-            .WithRedirectUri(returnUrl)
-            .Build();
-
-    if (httpContext.Request.Cookies.Count > 0)
-    {
-        var siteCookies = httpContext.Request.Cookies.Where(c => c.Key.Contains(".AspNetCore.") || c.Key.Contains("Microsoft.Authentication"));
-        foreach (var cookie in siteCookies)
-        {
-            httpContext.Response.Cookies.Delete(cookie.Key);
-        }
-    }
-
-    await httpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
-    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-})
-    .RequireAuthorization();
-
-app.MapGet("/Hello", (HttpContext httpContext) => Results.Ok("Hi!"))
+app.MapGet("/api/Counter", (HttpContext httpContext) => Results.Ok("Hi!"))
    .RequireAuthorization();
 
 app.MapRazorComponents<App>()

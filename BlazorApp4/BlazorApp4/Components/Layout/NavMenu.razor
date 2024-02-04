@@ -38,9 +38,12 @@
                     @context.User.Identity?.Name
                 </div>
                 <div class="nav-item px-3">
-                    <a href="/Account/Logout" data-enhance-nav="false">
-                         Logout
-                    </a>
+                    <form action="/Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <button type="submit" class="btn btn-link">
+                            Logout
+                        </button>
+                    </form>
                 </div>
             </Authorized>
             <NotAuthorized>
