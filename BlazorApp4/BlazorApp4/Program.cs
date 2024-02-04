@@ -6,8 +6,6 @@ using BlazorApp4.Client.Services;
 using BlazorApp4.Components;
 using BlazorApp4.Identity;
 using BlazorApp4.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 

@@ -11,5 +11,5 @@ public class HostingEnvironmentService
         IsWebAssembly = jsRuntime is IJSInProcessRuntime;
     }
 
-	public string EnvironmentName => IsWebAssembly ? "WebAssembly" : "Server";
+    public string EnvironmentName => IsWebAssembly ? "WebAssembly" : "Server";
 }
