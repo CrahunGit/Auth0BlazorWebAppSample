@@ -20,7 +20,9 @@ public static class AuthenticationExtensions
         {
             var authenticationProperties = new AuthenticationProperties
             {
-                RedirectUri = "/SignedOut"
+                // needs to be added to the Auth0 Allowed Logout URLs
+                // RedirectUri = "/SignedOut" 
+                RedirectUri = "/"
             };
             if (httpContext.Request.Cookies.Count > 0)
             {
