@@ -65,7 +65,7 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-AuthenticationExtensions.SetupEndpoints(app);
+app.SetupEndpoints();
 
 app.MapGet("/api/Counter", (HttpContext httpContext) => Results.Ok("Hi!"))
    .RequireAuthorization();

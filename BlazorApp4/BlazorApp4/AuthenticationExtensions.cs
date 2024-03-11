@@ -5,7 +5,7 @@ namespace BlazorApp4;
 
 public static class AuthenticationExtensions
 {
-    public static WebApplication SetupEndpoints(this WebApplication app)
+    public static IEndpointRouteBuilder SetupEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
         {
