@@ -1,6 +1,7 @@
 ﻿using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+
 namespace BlazorApp4;
 
 public static class AuthenticationExtensions
