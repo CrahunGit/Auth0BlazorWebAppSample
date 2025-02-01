@@ -4,20 +4,21 @@ using BlazorApp4.Client;
 using BlazorApp4.Client.Pages;
 using BlazorApp4.Client.Services;
 using BlazorApp4.Components;
-using BlazorApp4.Identity;
 using BlazorApp4.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
+    .AddAuthenticationStateSerialization()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
+
+//replaced by built in  .AddAuthenticationStateSerialization()
+//builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddAuth0WebAppAuthentication(options =>
 {
